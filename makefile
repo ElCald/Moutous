@@ -4,7 +4,7 @@
 #
 
 EXEC = main
-OBJECTS = motus.o
+OBJECTS = motus.o utiles.o
 PROJECT_NAME = Motus
 
 #

@@ -13,6 +13,9 @@
 #include <random>
 #include <bitset>
 #include <set>
+#include <bits/stdc++.h>
+#include <unordered_set>
+#include <cctype>
 
 
 /// SDL

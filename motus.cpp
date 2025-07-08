@@ -1,8 +1,32 @@
 #include "motus.h"
 #include "librairies.h"
+#include "utiles.h"
 
 
 using namespace std;
+
+
+/**
+ * 
+ */
+void get_list_words(const string nomFichier, vector<string>& liste_mots){
+    ifstream file_words_list(nomFichier);
+    string selected_word;
+
+    
+    if (!file_words_list.is_open()) {
+        cerr << "Erreur : impossible d'ouvrir le fichier !" << endl;
+        exit(EXIT_FAILURE);
+    }
+
+
+    while(getline (file_words_list, selected_word)){
+        trim(selected_word);
+        liste_mots.push_back(selected_word);
+    }
+
+    file_words_list.close();
+}
 
 /**
  * @param nomFichier Nom du fichier contenant la liste de mots
@@ -20,9 +44,12 @@ int count_num_words_in_list(const string nomFichier){
     }
 
 
-    while(getline (file_words_list, selected_word))
+    while(getline (file_words_list, selected_word)){
         nb_lines++;
+    }
+        
 
+    file_words_list.close();
 
     return nb_lines;
 }
@@ -83,12 +110,14 @@ string randomWord(const string nomFichier){
 /**
  * @param input Mot entré par le joueur
  * @param mot Mot choisi dans la liste
+ * @param alphabet Tableau qui contient les lettres et leur nombre dans le mot
+ * @param banned_letters Set qui contient les lettres testées qui ne sont pas dans le mot
  * 
- * @return Bitset qui indique quelles lettres sont bien placées
+ * @return Tableau qui indique quelles lettres sont bien placées
  */
-vector<int> compareWords(const string input, const string mot, const array<int, 26> alphabet, set<char>& banned_letters){
+array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string mot, const array<int, 26> alphabet, set<char>& banned_letters){
  
-    vector<int> res;
+    array<PLACEMENT, CAPACITY> res{};
     array<int, 26> temp_alphabet{};
     temp_alphabet = alphabet;
 
@@ -96,7 +125,7 @@ vector<int> compareWords(const string input, const string mot, const array<int, 
     // On vérifie les lettres bien placées
     for(size_t i=0; i<mot.length()-1; i++){
         if(input[i] == mot[i]){ // La lettre est bien placée
-            res.push_back(OK);
+            res[i] = OK;
             temp_alphabet[((int)input[i])-97]--;
         }
     }    
@@ -107,10 +136,10 @@ vector<int> compareWords(const string input, const string mot, const array<int, 
             if(temp_alphabet.at(((int)input[i])-97) > 0){ // la lettre est dans le mot
                 temp_alphabet[((int)input[i])-97]--;
 
-                res.push_back(WELL); 
+                res[i] = WELL; 
             }
             else{ // la lettre n'est pas dans le mot
-                res.push_back(KO);
+                res[i] = KO;
 
                 banned_letters.insert(input[i]);
             }
@@ -120,4 +149,73 @@ vector<int> compareWords(const string input, const string mot, const array<int, 
    
 
     return res;
+}
+
+
+
+void start_game(string& mot, size_t& size_word, double& x_start_tab, array<int, 26>& alphabet, vector<vector<Texture*>>& tabs_slots, Window& window){
+
+    vector<Texture*> tab_slots;
+
+    tabs_slots.clear();
+    window.clearTextureSlots();
+
+    mot = randomWord(LISTE_MOTS);
+
+    size_word = mot.length()-1; // Taille du mot sans \0
+
+    x_start_tab = (WIN_WIDTH/2) - ((double)size_word/2)*SIZE_SLOT;
+
+    alphabet.fill(0);
+
+    // On remplit le tableau pour savoir quelles lettres font partit du mot
+    for(size_t i=0; i<size_word; i++){
+        alphabet[((int)mot[i])-97] += 1;
+    }
+
+    for(size_t j=0; j<NB_TOUR; j++){
+        tab_slots.clear();
+        for(size_t i=0; i<size_word; i++){
+            // Création des textures de slots
+            tab_slots.push_back(new Texture(window, string(TEXTURE_SLOT), SIZE_SLOT, SIZE_SLOT, x_start_tab+(SIZE_SLOT*i), Y_START_TAB+(SIZE_SLOT*j)));
+        }
+        tabs_slots.push_back(tab_slots);
+    }
+
+
+    for(size_t j=0; j<NB_TOUR; j++){
+        for(size_t i=0; i<size_word; i++){
+            window.addTextureSlots(tabs_slots.at(j).at(i));
+        }
+    }
+
+
+}
+
+void trim(string& s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+        [](unsigned char ch) { return !isspace(ch); }));
+    s.erase(find_if(s.rbegin(), s.rend(),
+        [](unsigned char ch) { return !isspace(ch); }).base(), s.end());
+}
+
+
+
+/**
+ * Vérifie si le mot écrit éxiste dans la liste de mots
+ * 
+ * @return true si le mot est dans la liste
+ */
+bool verif_word_exist(const vector<char> mot, const unordered_set<string> dico){
+    string mon_mot(mot.begin(), mot.end());
+
+    // mon_mot.push_back('\0');
+    
+    cout << mon_mot.length() << endl;
+
+    if (dico.find(mon_mot) != dico.end()) {
+        return true;
+    } 
+
+    return false;
 }
