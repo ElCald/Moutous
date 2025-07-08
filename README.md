@@ -19,14 +19,15 @@ Appuis sur la touche `Tab` pour afficher le mot.
 ## Compilation
 ### Debug
 ```
-./rebuild linux
-./build_debug moutous
+./rebuild.sh linux
 ```
+Génération d'un exécutable pour un environnement Linux dans le répertoire `build_debug`.
 
 ### Release
 ```
-./rebuild windows
+./rebuild.sh windows
 ```
+Génération d'un exécutable pour un environnement Windows dans le répertoire `build_release`. Pour compacter l'application, faire un zip du `moutous.exe`, `bin/` et `misc/`.
 
 ## Annexe
 Liste de mots : [liste](http://www.3zsoftware.com/fr/listes.php)
