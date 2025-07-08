@@ -4,34 +4,62 @@ project(Moutous)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# --- Find SDL2 ---
-find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
+# --- Windows-specific settings ---
+set(WINDOWS_LIBS
+    -lsetupapi
+    -lwinmm
+    -limm32
+    -lversion
+    -ldinput8
+    -ldxguid
+    -ldxerr8
+    -luser32
+    -lgdi32
+    -lwinmm
+    -limm32
+    -lole32
+    -loleaut32
+    -lshell32
+    -lsetupapi
+    -lversion
+    -luuid
+    -static-libgcc
+    -static-libstdc++
+)
 
-# --- Find SDL2_ttf ---
-find_library(SDL2_TTF_LIB SDL2_ttf HINTS /usr/lib/x86_64-linux-gnu)
-if(NOT SDL2_TTF_LIB)
-    message(FATAL_ERROR "SDL2_ttf not found! Run: sudo apt install libsdl2-ttf-dev")
-endif()
+# Indiquer les chemins vers SDL2
+set(SDL2_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/SDL_lib/SDL2/include")
+set(SDL2_LIB_DIR "${CMAKE_SOURCE_DIR}/SDL_lib/SDL2/lib")
 
-# --- Source files ---
-file(GLOB_RECURSE SOURCES src/*.cpp)
-add_executable(main ${SOURCES})
-
-# --- Includes ---
-target_include_directories(main PRIVATE
+# Inclure les dossiers d'includes
+include_directories(
+    ${SDL2_INCLUDE_DIR}
+    ${SDL2_TTF_INCLUDE_DIR}
     includes
-    ${SDL2_INCLUDE_DIRS}
-    /usr/include/SDL2
 )
 
-# --- Link libraries ---
-target_link_libraries(main PRIVATE
-    ${SDL2_LIBRARIES}
-    SDL2main
-    ${SDL2_TTF_LIB}
+# Récupérer les sources
+file(GLOB_RECURSE SOURCES src/*.cpp)
+
+# Créer l'exécutable
+add_executable(main WIN32 ${SOURCES})
+
+# Linker les libs SDL2 (attention à l'ordre)
+target_link_libraries(main
+    
+    -lmingw32
+    "${SDL2_LIB_DIR}/libSDL2.a"
+    "${SDL2_LIB_DIR}/libSDL2main.a"
+    "${SDL2_LIB_DIR}/libSDL2_ttf.a"
+    "${WINDOWS_LIBS}"
+    -lrpcrt4            # pour les gui Windows
+    -mwindows           # pour les gui Windows
 )
 
-# Alternative: Uncomment if POST_BUILD fails
+# Copier les DLLs dans le dossier de build pour l'exécutable
+file(COPY SDL_lib/SDL2/bin DESTINATION ${CMAKE_BINARY_DIR})
+
+
+# Copier dossier misc (si tu en as besoin)
 file(COPY misc DESTINATION ${CMAKE_BINARY_DIR})
 

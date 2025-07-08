@@ -1,4 +1,5 @@
 *.o
 *.out
 *.exe
-/build
+/build_debug
+/build_release
