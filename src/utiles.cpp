@@ -12,7 +12,7 @@
  * @param _win_width Largeur de la fenêtre
  * @param _win_height Hauteur de la fenêtre
  */
-Window::Window(const size_t _win_width, const size_t _win_height) : win_width(_win_width), win_height(_win_height) {
+Window::Window(const size_t _win_width, const size_t _win_height) : win_width(_win_width), win_height(_win_height), visibleTextZones(false) {
 
     #ifdef _DEBUG_
     SDL_version v;
@@ -156,7 +156,9 @@ void Window::render(){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     #endif
 
-    renderTexts();
+    
+    if(visibleTextZones)
+        renderTexts(); // affichage du texte
 
     SDL_RenderPresent(renderer);
 }
@@ -249,6 +251,17 @@ void Window::addTextZones(int num, const int x, const int y){
         addText("Test", x, y+TTF_FontHeight(font)*i, {255,255,255,255});
     }
 
+}
+
+
+
+void Window::showTextZones(){
+    visibleTextZones = true;
+}
+
+
+void Window::hideTextZones(){
+    visibleTextZones = false;
 }
 
 

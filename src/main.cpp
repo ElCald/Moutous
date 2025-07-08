@@ -18,6 +18,7 @@ int main(int argc, char* argv[]){
     int y_start_banned = WIN_HEIGHT - 150;
     int tour = 0;
     bool victoire = false;
+    bool failed = false;
     string mot;
 
     array<int, 26> alphabet{}; // Tableau du nombre de lettre de l'alphabet dans le mot
@@ -54,6 +55,8 @@ int main(int argc, char* argv[]){
     Texture motus_logo(window, string(TEXTURE_LOGO), 448, 64, (WIN_WIDTH/2)-(448/2), 20);
     window.addTextureBackground(&motus_logo);
 
+    window.addTextZones(1, 10, WIN_HEIGHT-H6-10);
+
 
     for(int i=0; i<26; i++){
         textures_slot.push_back(new Texture(window, string(REP_CLASSIQUES) + noms_fichiers_lettres.at(i), SIZE_SLOT, SIZE_SLOT, 0, 0));
@@ -86,6 +89,11 @@ int main(int argc, char* argv[]){
 
     
 
+    window.updateText(0, "Mot : " + mot);
+    // window.updateText(0, "Mot : " + mot.substr(0, mot.size() - 1));
+
+    
+
     SDL_Keycode key;
 
     while(window.program_launched){
@@ -95,12 +103,12 @@ int main(int argc, char* argv[]){
         while(SDL_PollEvent(&window.event)){
 
             switch(window.event.type){
-                case SDL_KEYDOWN: // gestion du clavier
+                case SDL_KEYDOWN: // gestion du clavier appui de la touche
 
                     key = window.event.key.keysym.sym;
 
                     // Appuis sur une lettre entre A et Z
-                    if (!victoire && key >= SDLK_a && key <= SDLK_z && keyboard_cursor < size_word) {
+                    if (!victoire && !failed && tour < NB_TOUR && key >= SDLK_a && key <= SDLK_z && keyboard_cursor < size_word) {
                         char lettre = 'a';
                         switch (key) {
                             case SDLK_a:
@@ -204,6 +212,7 @@ int main(int argc, char* argv[]){
                             my_word.clear();
                             keyboard_cursor = 1;
                             victoire = false;
+                            failed = false;
                             tour = 0;
 
                             // initialisation du mot de l'utilisateur
@@ -213,6 +222,11 @@ int main(int argc, char* argv[]){
                             for(int i=0; i<26; i++){
                                 textures_lettre_clavier[i]->texture = textures_slot.at(i)->texture;
                             }
+
+                            window.updateText(0, "Mot : " + mot);
+                            // window.updateText(0, "Mot : " + mot.substr(0, mot.size() - 1));
+
+                            window.hideTextZones();
 
                             break;
 
@@ -225,13 +239,14 @@ int main(int argc, char* argv[]){
                             break;
 
                         case SDLK_RETURN:
+                        case SDLK_KP_ENTER:
                             if(!victoire && tour < NB_TOUR && keyboard_cursor == size_word && verif_word_exist(my_word, dictionnaire_mots)){
 
                                 victoire = true;
 
                                 array<PLACEMENT, CAPACITY> res = compareWords(my_word, mot, alphabet, banned_letters);
 
-                                for(size_t i=0; i<mot.length()-1; i++){
+                                for(size_t i=0; i<mot.length(); i++){
                                     if(res.at(i) == OK){
                                         tabs_slots[tour][i]->texture = textures_slot_correctes.at(((int)my_word[i])-97)->texture;
                                     }else if(res.at(i) == WELL){
@@ -251,17 +266,24 @@ int main(int argc, char* argv[]){
                                     }
                                 }
 
-                                if(!victoire){
+                                if(!victoire && tour < NB_TOUR-1){
                                     my_word.clear();
 
                                     tour++;
 
                                     my_word.push_back(mot[0]);
                                     tabs_slots[tour][0]->texture = textures_slot.at(((int)mot[0])-97)->texture;
+                                }else{
+                                    failed = true;
+                                    window.showTextZones();
                                 }
 
                                 keyboard_cursor = 1;
                             }
+                            break;
+
+                        case SDLK_TAB:
+                            window.showTextZones();
                             break;
 
                         default:
@@ -269,6 +291,18 @@ int main(int argc, char* argv[]){
                         
                     }
                     
+                    break;
+
+                case SDL_KEYUP: // gestion du clavier levé de la touche
+                    switch (window.event.key.keysym.sym) {
+                        case SDLK_TAB:
+                            window.hideTextZones();
+                            break;
+
+                        default:
+                            continue;
+                    }
+
                     break;
 
                 case SDL_QUIT: // clique sur la croix de la fenêtre

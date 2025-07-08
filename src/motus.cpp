@@ -123,7 +123,7 @@ array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string m
 
 
     // On vérifie les lettres bien placées
-    for(size_t i=0; i<mot.length()-1; i++){
+    for(size_t i=0; i<mot.length(); i++){
         if(input[i] == mot[i]){ // La lettre est bien placée
             res[i] = OK;
             temp_alphabet[((int)input[i])-97]--;
@@ -131,7 +131,7 @@ array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string m
     }    
 
     // On test les lettres mal placée
-    for(size_t i=0; i<mot.length()-1; i++){ 
+    for(size_t i=0; i<mot.length(); i++){ 
         if(input[i] != mot[i]){ // la lettre n'est pas au bon endroit
             if(temp_alphabet.at(((int)input[i])-97) > 0){ // la lettre est dans le mot
                 temp_alphabet[((int)input[i])-97]--;
@@ -162,7 +162,9 @@ void start_game(string& mot, size_t& size_word, double& x_start_tab, array<int, 
 
     mot = randomWord(LISTE_MOTS);
 
-    size_word = mot.length()-1; // Taille du mot sans \0
+    trim(mot);
+
+    size_word = mot.length(); // Taille du mot 
 
     x_start_tab = (WIN_WIDTH/2) - ((double)size_word/2)*SIZE_SLOT;
 
@@ -193,7 +195,7 @@ void start_game(string& mot, size_t& size_word, double& x_start_tab, array<int, 
 }
 
 void trim(string& s) {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+    s.erase(s.begin(), find_if(s.begin(), s.end(),
         [](unsigned char ch) { return !isspace(ch); }));
     s.erase(find_if(s.rbegin(), s.rend(),
         [](unsigned char ch) { return !isspace(ch); }).base(), s.end());
@@ -208,10 +210,6 @@ void trim(string& s) {
  */
 bool verif_word_exist(const vector<char> mot, const unordered_set<string> dico){
     string mon_mot(mot.begin(), mot.end());
-
-    // mon_mot.push_back('\0');
-    
-    cout << mon_mot.length() << endl;
 
     if (dico.find(mon_mot) != dico.end()) {
         return true;

@@ -79,6 +79,8 @@ class Window {
         int center_win_width;
         int center_win_height;
 
+        bool visibleTextZones;
+
         vector<Texture*> texture_scene; // Images de la scène
         vector<Texture*> texture_slots; // Images de la scène
         vector<Texture*> texture_banned; // Images de la scène
@@ -110,6 +112,9 @@ class Window {
         void updateText(size_t index, const string& newText);
 
         void addTextZones(int num, const int x, const int y);
+
+        void showTextZones();
+        void hideTextZones();
         
 
 };
