@@ -1,5 +1,5 @@
 #include "librairies.h"
-#include "motus.h"
+#include "game.h"
 #include "utiles.h"
 
 using namespace std;
@@ -76,11 +76,11 @@ int main(int argc, char* argv[]){
 
     textures_slot.push_back(new Texture(window, string(TEXTURE_SLOT), SIZE_SLOT, SIZE_SLOT, 0, 0));
 
-    get_list_words(LISTE_MOTS, liste_mots); // récupère la lsute de mots
+    get_list_words(MOTS_COMPLEX, liste_mots); // liste de mots complexes pour vérification
 
     unordered_set<string> dictionnaire_mots(liste_mots.begin(), liste_mots.end());
     
-    start_game(mot, size_word, x_start_tab, alphabet, tabs_slots, window);
+    start_game(MOTS_CLASSIQUE, mot, size_word, x_start_tab, alphabet, tabs_slots, window);
     printf("%s\n", mot.c_str());
 
     // initialisation du mot de l'utilisateur
@@ -206,7 +206,7 @@ int main(int argc, char* argv[]){
 
                         case SDLK_SPACE:
                     
-                            start_game(mot, size_word, x_start_tab, alphabet, tabs_slots, window);
+                            start_game(MOTS_CLASSIQUE, mot, size_word, x_start_tab, alphabet, tabs_slots, window);
                             printf("%s\n", mot.c_str());
 
                             my_word.clear();

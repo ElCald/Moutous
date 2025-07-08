@@ -22,4 +22,4 @@ def traiter_fichier(entree, sortie):
             fout.write(mot + '\n')
 
 # Exemple d'utilisation :
-traiter_fichier('misc/mots/liste_mots_simple_FR_raw.txt', 'misc/mots/liste_mots_simple_FR.txt')
+traiter_fichier('../misc/mots/petit_larousse_raw.txt', '../misc/mots/petit_larousse_FR.txt')
