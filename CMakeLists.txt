@@ -70,6 +70,9 @@ elseif(${TARGET} STREQUAL "windows")# Windows : lier les libs manuellement
         -static-libstdc++
     )
 
+    enable_language(RC)  # Active le compilateur de ressources
+    set(RESOURCE_FILES ${CMAKE_SOURCE_DIR}/resources.rc)
+
     # Indiquer les chemins vers SDL2
     set(SDL2_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/SDL_lib/SDL2/include")
     set(SDL2_LIB_DIR "${CMAKE_SOURCE_DIR}/SDL_lib/SDL2/lib")
@@ -82,7 +85,7 @@ elseif(${TARGET} STREQUAL "windows")# Windows : lier les libs manuellement
     )
 
     # Créer l'exécutable
-    add_executable(moutous WIN32 ${SOURCES})
+    add_executable(moutous WIN32 ${SOURCES} ${RESOURCE_FILES}) # le WIN32 permet d'avoir une UI plutôt que le console
 
     # Linker les libs SDL2 (attention à l'ordre)
     target_link_libraries(moutous
