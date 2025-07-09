@@ -18,6 +18,7 @@
 
 // Textures
 #define TEXTURE_BACKGROUND REP_BACKGROUND "bg_bleu.bmp"
+#define TEXTURE_BACKGROUND_LOAD REP_BACKGROUND "bg_bleu_chargement.bmp"
 #define TEXTURE_SLOT REP_UI "slot.bmp"
 #define TEXTURE_LOGO REP_UI "motus_logo.bmp"
 
@@ -80,11 +81,13 @@ class Window {
         int center_win_height;
 
         bool visibleTextZones;
+        bool animationEnable;
+
+        Texture* texture_background; // Images de la scène
 
         vector<Texture*> texture_scene; // Images de la scène
         vector<Texture*> texture_slots; // Images de la scène
         vector<Texture*> texture_banned; // Images de la scène
-        vector<Texture*> texture_background; // Images de la scène
         vector<TextElement*> texts;
 
         void addText(const string& text, int x, int y, SDL_Color color);   
@@ -97,10 +100,10 @@ class Window {
         void render(); // Actualise à l'écran
         Uint32 animate(Uint32 last_update);
 
-        void addTexture(Texture* texture);
+        void addTextureScene(Texture* texture);
         void addTextureSlots(Texture* texture);
         void addTextureBanned(Texture* texture);
-        void addTextureBackground(Texture* texture);
+        void setTextureBackground(Texture* texture);
         void addObjet(Objet* obj);
 
         void clearTextureSlots();
@@ -115,6 +118,9 @@ class Window {
 
         void showTextZones();
         void hideTextZones();
+
+        void enableAnimations();
+        void disableAnimations();
         
 
 };

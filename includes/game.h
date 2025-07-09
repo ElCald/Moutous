@@ -41,7 +41,7 @@ string getWord(const int pos, const string nomFichier);
 
 string randomWord(const string nomFichier);
 
-array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string mot, const array<int, 26> alphabet, set<char>& banned_letters);
+array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string mot, const array<int, 26> alphabet);
 
 void start_game(const string liste, string& mot, size_t& size_word, double& x_start_tab, array<int, 26>& alphabet, vector<vector<Texture*>>& tabs_slots, Window& window);
 
@@ -49,4 +49,5 @@ bool verif_word_exist(const vector<char> mot, const unordered_set<string> dico);
 
 void trim(string& s);
 
+void animJumpSlots(Window& window, const size_t tour, vector<vector<Texture*>>& tabs_slots);
 #endif

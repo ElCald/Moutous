@@ -12,7 +12,7 @@
  * @param _win_width Largeur de la fenêtre
  * @param _win_height Hauteur de la fenêtre
  */
-Window::Window(const size_t _win_width, const size_t _win_height) : win_width(_win_width), win_height(_win_height), visibleTextZones(false) {
+Window::Window(const size_t _win_width, const size_t _win_height) : win_width(_win_width), win_height(_win_height), visibleTextZones(false), animationEnable(false) {
 
     #ifdef _DEBUG_
     SDL_version v;
@@ -32,7 +32,7 @@ Window::Window(const size_t _win_width, const size_t _win_height) : win_width(_w
     if (TTF_Init() != 0) 
         ExitWithError("Erreur TTF_Init");
 
-    font = TTF_OpenFont(POLICE_ARIAL, H6);
+    font = TTF_OpenFont(POLICE_ARIAL, H4);
 
     if (!font) 
         ExitWithError("Erreur TTF_OpenFont");
@@ -94,21 +94,17 @@ void Window::render(){
     SDL_RenderClear(renderer);
 
     // Rendu du fond
-    for(Texture* t : texture_background){
-        if(t == nullptr)
-            continue;
+    if( (SDL_RenderCopy(renderer, texture_background->texture, NULL, texture_background->position)) != 0 )
+        ExitWithError("Erreur affichage image dans le rendu");
 
-        if( (SDL_RenderCopy(renderer, t->texture, NULL, t->position)) != 0 )
-            ExitWithError("Erreur affichage image dans le rendu");
 
-        #ifdef _DEBUG_
+    #ifdef _DEBUG_
         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 128);
         SDL_RenderDrawRect(renderer, t->position);
-        #endif
-
-    }
+    #endif
 
 
+    // Rendu des éléments de scène
     for(Texture* t : texture_scene){
         if(t == nullptr)
             continue;
@@ -123,6 +119,7 @@ void Window::render(){
 
     }
 
+    // Rendu des slots
     for(Texture* t : texture_slots){
         if(t == nullptr)
             continue;
@@ -137,7 +134,8 @@ void Window::render(){
 
     }
 
-     for(Texture* t : texture_banned){
+    // Rendu du clavier
+    for(Texture* t : texture_banned){
         if(t == nullptr)
             continue;
 
@@ -156,7 +154,7 @@ void Window::render(){
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     #endif
 
-    
+
     if(visibleTextZones)
         renderTexts(); // affichage du texte
 
@@ -174,6 +172,9 @@ Uint32 Window::animate(Uint32 last_update){
 
     // now - last_update >= FRAME_DELAY_ANIMATION
 
+    if(animationEnable){
+
+    }
 
 
     return new_last_update;
@@ -183,7 +184,7 @@ Uint32 Window::animate(Uint32 last_update){
 /**
  * Ajout d'une texture à la scène
  */
-void Window::addTexture(Texture* texture){
+void Window::addTextureScene(Texture* texture){
     texture_scene.push_back(texture);
 }
 
@@ -210,10 +211,10 @@ void Window::clearTextureSlots(){
 }
 
 /**
- * Ajout d'une texture au background
+ * Ajout d'une texture au background mais retire la précédente
  */
-void Window::addTextureBackground(Texture* texture){
-    texture_background.push_back(texture);
+void Window::setTextureBackground(Texture* texture){
+    texture_background = texture;
 }
 
 
@@ -262,6 +263,15 @@ void Window::showTextZones(){
 
 void Window::hideTextZones(){
     visibleTextZones = false;
+}
+
+
+void Window::enableAnimations(){
+    animationEnable = true;
+}
+
+void Window::disableAnimations(){
+    animationEnable = false;
 }
 
 
@@ -471,7 +481,7 @@ Objet::Objet(Window& window, string texture_path, const size_t width, const size
 
     texture = new Texture(window, texture_path, position);
 
-    window.addTexture(texture);
+    window.addTextureScene(texture);
 }
 
 

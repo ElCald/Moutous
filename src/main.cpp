@@ -22,25 +22,24 @@ int main(int argc, char* argv[]){
     string mot;
 
     array<int, 26> alphabet{}; // Tableau du nombre de lettre de l'alphabet dans le mot
-    set<char> banned_letters;
 
-    vector<string> liste_mots;
+    vector<string> liste_mots; // liste de tous les mots (complexes) pour vérification
 
-    vector<vector<Texture*>> tabs_slots; 
+    vector<vector<Texture*>> tabs_slots; // Tableau des cases de lettres
+    vector<Texture*> tab_lettres_clavier; // Contient toutes les lettres du clavier
 
-    vector<char> my_word;
+    vector<char> my_word; // Mot entré par l'utilisateur
 
     vector<string> noms_fichiers_lettres {"lettre_A.bmp", "lettre_B.bmp", "lettre_C.bmp", "lettre_D.bmp", "lettre_E.bmp", "lettre_F.bmp", "lettre_G.bmp", "lettre_H.bmp",
                                         "lettre_I.bmp", "lettre_J.bmp", "lettre_K.bmp", "lettre_L.bmp", "lettre_M.bmp", "lettre_N.bmp", "lettre_O.bmp", "lettre_P.bmp",
                                         "lettre_Q.bmp", "lettre_R.bmp", "lettre_S.bmp", "lettre_T.bmp", "lettre_U.bmp", "lettre_V.bmp", "lettre_W.bmp", "lettre_X.bmp",
                                         "lettre_Y.bmp", "lettre_Z.bmp"};
     
-    vector<Texture*> textures_slot; // Contient toutes les lettres et à la fin le slot
-    vector<Texture*> textures_slot_correctes; // Contient toutes les lettres et à la fin le slot
-    vector<Texture*> textures_slot_placements; // Contient toutes les lettres et à la fin le slot
-
-    vector<Texture*> textures_lettre_clavier; // Contient toutes les lettres et à la fin le slot
-    vector<Texture*> textures_lettre_banned; // Contient toutes les lettres et à la fin le slot
+    // Textures lettres
+    vector<Texture*> textures_slot; // Contient toutes les lettres classiques et à la fin le slot
+    vector<Texture*> textures_slot_correctes; // Contient toutes les lettres correctes
+    vector<Texture*> textures_slot_placements; // Contient toutes les lettres placements
+    vector<Texture*> textures_lettre_banned; // Contient toutes les lettres bannies
 
 
     Uint32 last_update = SDL_GetTicks();
@@ -48,16 +47,23 @@ int main(int argc, char* argv[]){
     // Création de la fenêtre
     Window window(WIN_WIDTH, WIN_HEIGHT);
 
+    // Écran de chargement
+    Texture background_load(window, string(TEXTURE_BACKGROUND_LOAD), WIN_WIDTH, WIN_HEIGHT, 0, 0);
+    window.setTextureBackground(&background_load);
+
+    window.render();
+
 
     Texture background(window, string(TEXTURE_BACKGROUND), WIN_WIDTH, WIN_HEIGHT, 0, 0);
-    window.addTextureBackground(&background);
+    window.setTextureBackground(&background);
 
     Texture motus_logo(window, string(TEXTURE_LOGO), 448, 64, (WIN_WIDTH/2)-(448/2), 20);
-    window.addTextureBackground(&motus_logo);
+    window.addTextureScene(&motus_logo);
 
-    window.addTextZones(1, 10, WIN_HEIGHT-H6-10);
+    window.addTextZones(1, 10, WIN_HEIGHT-H4-10);
 
 
+    // Chargement des textures des lettres
     for(int i=0; i<26; i++){
         textures_slot.push_back(new Texture(window, string(REP_CLASSIQUES) + noms_fichiers_lettres.at(i), SIZE_SLOT, SIZE_SLOT, 0, 0));
         textures_slot_correctes.push_back(new Texture(window, string(REP_CORRECTES) + noms_fichiers_lettres.at(i), SIZE_SLOT, SIZE_SLOT, 0, 0));
@@ -65,34 +71,30 @@ int main(int argc, char* argv[]){
         textures_lettre_banned.push_back(new Texture(window, string(REP_INCORRECTES) + noms_fichiers_lettres.at(i), SIZE_SLOT, SIZE_SLOT, 0, 0));
     }
 
+    textures_slot.push_back(new Texture(window, string(TEXTURE_SLOT), SIZE_SLOT, SIZE_SLOT, 0, 0));
+
 
     for(int i=0; i<26; i++){
-        textures_lettre_clavier.push_back(new Texture(window, string(REP_CLASSIQUES) + noms_fichiers_lettres.at(i), SIZE_BANNED_LETTERS, SIZE_BANNED_LETTERS, x_start_banned+((SIZE_BANNED_LETTERS+10)*(i%13)), y_start_banned+((SIZE_BANNED_LETTERS+10)*( (i>12)?1:0 ))));
+        tab_lettres_clavier.push_back(new Texture(window, string(REP_CLASSIQUES) + noms_fichiers_lettres.at(i), SIZE_BANNED_LETTERS, SIZE_BANNED_LETTERS, x_start_banned+((SIZE_BANNED_LETTERS+10)*(i%13)), y_start_banned+((SIZE_BANNED_LETTERS+10)*( (i>12)?1:0 ))));
     }
 
-    for(auto t : textures_lettre_clavier){
+    for(auto t : tab_lettres_clavier){
         window.addTextureBanned(t);
     }
 
-    textures_slot.push_back(new Texture(window, string(TEXTURE_SLOT), SIZE_SLOT, SIZE_SLOT, 0, 0));
 
     get_list_words(MOTS_COMPLEX, liste_mots); // liste de mots complexes pour vérification
 
-    unordered_set<string> dictionnaire_mots(liste_mots.begin(), liste_mots.end());
+    unordered_set<string> dictionnaire_mots(liste_mots.begin(), liste_mots.end()); // Création d'un dictionnaire à partir de cette liste
     
     start_game(MOTS_CLASSIQUE, mot, size_word, x_start_tab, alphabet, tabs_slots, window);
-    printf("%s\n", mot.c_str());
+    // printf("%s\n", mot.c_str());
+    window.updateText(0, "Mot : " + mot);
 
     // initialisation du mot de l'utilisateur
     my_word.push_back(mot[0]);
     tabs_slots[tour][0]->texture = textures_slot.at(((int)mot[0])-97)->texture;
 
-    
-
-    window.updateText(0, "Mot : " + mot);
-    // window.updateText(0, "Mot : " + mot.substr(0, mot.size() - 1));
-
-    
 
     SDL_Keycode key;
 
@@ -192,11 +194,11 @@ int main(int argc, char* argv[]){
                             default:
                                 continue;
                         }
-
+                        
+                        // On attribut à la case du tableau la texture de la lettre correspondante
                         tabs_slots[tour][keyboard_cursor]->texture = textures_slot.at(((int)lettre)-97)->texture;
                         my_word.push_back(lettre);
                         keyboard_cursor++;
-
                     }
 
                     switch (window.event.key.keysym.sym) {
@@ -206,8 +208,10 @@ int main(int argc, char* argv[]){
 
                         case SDLK_SPACE:
                     
+                            window.hideTextZones();
+
                             start_game(MOTS_CLASSIQUE, mot, size_word, x_start_tab, alphabet, tabs_slots, window);
-                            printf("%s\n", mot.c_str());
+                            // printf("%s\n", mot.c_str());
 
                             my_word.clear();
                             keyboard_cursor = 1;
@@ -220,17 +224,15 @@ int main(int argc, char* argv[]){
                             tabs_slots[tour][0]->texture = textures_slot.at(((int)mot[0])-97)->texture;
 
                             for(int i=0; i<26; i++){
-                                textures_lettre_clavier[i]->texture = textures_slot.at(i)->texture;
+                                tab_lettres_clavier[i]->texture = textures_slot.at(i)->texture;
                             }
 
                             window.updateText(0, "Mot : " + mot);
-                            // window.updateText(0, "Mot : " + mot.substr(0, mot.size() - 1));
-
-                            window.hideTextZones();
 
                             break;
 
                         case SDLK_BACKSPACE:
+                            // Suppression d'une lettre tant qu'on est pas à la case 0
                             if(keyboard_cursor > 1){
                                 keyboard_cursor--;
                                 my_word.pop_back();
@@ -240,45 +242,56 @@ int main(int argc, char* argv[]){
 
                         case SDLK_RETURN:
                         case SDLK_KP_ENTER:
-                            if(!victoire && tour < NB_TOUR && keyboard_cursor == size_word && verif_word_exist(my_word, dictionnaire_mots)){
+                            if(!victoire && tour < NB_TOUR && keyboard_cursor == size_word){
 
-                                victoire = true;
+                                if(verif_word_exist(my_word, dictionnaire_mots)){
+                                    victoire = true;
 
-                                array<PLACEMENT, CAPACITY> res = compareWords(my_word, mot, alphabet, banned_letters);
+                                    array<PLACEMENT, CAPACITY> res = compareWords(my_word, mot, alphabet);
 
-                                for(size_t i=0; i<mot.length(); i++){
-                                    if(res.at(i) == OK){
-                                        tabs_slots[tour][i]->texture = textures_slot_correctes.at(((int)my_word[i])-97)->texture;
-                                    }else if(res.at(i) == WELL){
-                                        tabs_slots[tour][i]->texture = textures_slot_placements.at(((int)my_word[i])-97)->texture;
-                                        victoire = false;
-                                    }else{
-                                        victoire = false;
+                                    for(size_t i=0; i<mot.length(); i++){
+                                        if(res.at(i) == OK){
+                                            tabs_slots[tour][i]->texture = textures_slot_correctes.at(((int)my_word[i])-97)->texture;
+                                        }else if(res.at(i) == WELL){
+                                            tabs_slots[tour][i]->texture = textures_slot_placements.at(((int)my_word[i])-97)->texture;
+                                            victoire = false;
+                                        }else{
+                                            victoire = false;
+                                        }
+
+                                        // remplissage du clavier
+                                        if(res.at(i) == KO && tab_lettres_clavier[((int)my_word[i])-97]->texture != textures_slot_correctes.at(((int)my_word[i])-97)->texture){
+                                            tab_lettres_clavier[((int)my_word[i])-97]->texture = textures_lettre_banned.at(((int)my_word[i])-97)->texture;
+                                        }else if(res.at(i) == WELL && tab_lettres_clavier[((int)my_word[i])-97]->texture != textures_slot_correctes.at(((int)my_word[i])-97)->texture){
+                                            tab_lettres_clavier[((int)my_word[i])-97]->texture = textures_slot_placements.at(((int)my_word[i])-97)->texture;
+                                        }else{
+                                            tab_lettres_clavier[((int)my_word[i])-97]->texture = textures_slot_correctes.at(((int)my_word[i])-97)->texture;
+                                        }
                                     }
 
-                                    // remplissage du clavier
-                                    if(res.at(i) == KO && textures_lettre_clavier[((int)my_word[i])-97]->texture != textures_slot_correctes.at(((int)my_word[i])-97)->texture){
-                                        textures_lettre_clavier[((int)my_word[i])-97]->texture = textures_lettre_banned.at(((int)my_word[i])-97)->texture;
-                                    }else if(res.at(i) == WELL && textures_lettre_clavier[((int)my_word[i])-97]->texture != textures_slot_correctes.at(((int)my_word[i])-97)->texture){
-                                        textures_lettre_clavier[((int)my_word[i])-97]->texture = textures_slot_placements.at(((int)my_word[i])-97)->texture;
+                                    if(!victoire && tour < NB_TOUR-1){
+                                        my_word.clear();
+
+                                        tour++;
+
+                                        my_word.push_back(mot[0]);
+                                        tabs_slots[tour][0]->texture = textures_slot.at(((int)mot[0])-97)->texture;
+
+                                        animJumpSlots(window, tour-1, tabs_slots);
                                     }else{
-                                        textures_lettre_clavier[((int)my_word[i])-97]->texture = textures_slot_correctes.at(((int)my_word[i])-97)->texture;
+                                        failed = true;
+                                        window.showTextZones();
+
+                                        animJumpSlots(window, tour, tabs_slots);
                                     }
+
+                                    keyboard_cursor = 1;
+
+                                    
                                 }
+                                else{
 
-                                if(!victoire && tour < NB_TOUR-1){
-                                    my_word.clear();
-
-                                    tour++;
-
-                                    my_word.push_back(mot[0]);
-                                    tabs_slots[tour][0]->texture = textures_slot.at(((int)mot[0])-97)->texture;
-                                }else{
-                                    failed = true;
-                                    window.showTextZones();
                                 }
-
-                                keyboard_cursor = 1;
                             }
                             break;
 
@@ -288,7 +301,6 @@ int main(int argc, char* argv[]){
 
                         default:
                             continue;
-                        
                     }
                     
                     break;
@@ -302,7 +314,6 @@ int main(int argc, char* argv[]){
                         default:
                             continue;
                     }
-
                     break;
 
                 case SDL_QUIT: // clique sur la croix de la fenêtre
@@ -318,7 +329,6 @@ int main(int argc, char* argv[]){
         last_update = window.animate(last_update);
 
         window.render();
-
 
 
         // --- Contrôle du temps de frame ---

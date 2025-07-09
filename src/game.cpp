@@ -7,7 +7,10 @@ using namespace std;
 
 
 /**
+ * Récupère tout le contenue d'un fichier txt pour le mettre dans une liste
  * 
+ * @param nomFichier Chemin d'accès vers le fichier liste de mots
+ * @param liste_mots Mots contenues dans le fichier txt
  */
 void get_list_words(const string nomFichier, vector<string>& liste_mots){
     ifstream file_words_list(nomFichier);
@@ -28,8 +31,10 @@ void get_list_words(const string nomFichier, vector<string>& liste_mots){
     file_words_list.close();
 }
 
+
 /**
- * @param nomFichier Nom du fichier contenant la liste de mots
+ * @param nomFichier Chemin d'accès vers le fichier liste de mots
+ * 
  * @return Le nombre de lignes du fichier
  */
 int count_num_words_in_list(const string nomFichier){
@@ -57,7 +62,8 @@ int count_num_words_in_list(const string nomFichier){
 
 /**
  * @param pos Indice du mot à récupérer dans la liste
- * @param nomFichier Nom du fichier contenant la liste de mots
+ * @param nomFichier Chemin d'accès vers le fichier liste de mots
+ * 
  * @return Le nombre de lignes du fichier
  */
 string getWord(const int pos, const string nomFichier){
@@ -87,6 +93,8 @@ string getWord(const int pos, const string nomFichier){
 
 
 /**
+ * @param nomFichier Chemin d'accès vers le fichier liste de mots
+ * 
  * @return Mot aléatoire de la liste de mots
  */
 string randomWord(const string nomFichier){
@@ -111,11 +119,10 @@ string randomWord(const string nomFichier){
  * @param input Mot entré par le joueur
  * @param mot Mot choisi dans la liste
  * @param alphabet Tableau qui contient les lettres et leur nombre dans le mot
- * @param banned_letters Set qui contient les lettres testées qui ne sont pas dans le mot
  * 
  * @return Tableau qui indique quelles lettres sont bien placées
  */
-array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string mot, const array<int, 26> alphabet, set<char>& banned_letters){
+array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string mot, const array<int, 26> alphabet){
  
     array<PLACEMENT, CAPACITY> res{};
     array<int, 26> temp_alphabet{};
@@ -140,8 +147,6 @@ array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string m
             }
             else{ // la lettre n'est pas dans le mot
                 res[i] = KO;
-
-                banned_letters.insert(input[i]);
             }
         }
     }
@@ -152,7 +157,17 @@ array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string m
 }
 
 
-
+/**
+ * Initialisation d'une partie avec sélection d'un nouveau mot 
+ * 
+ * @param liste Chemin d'accès vers le fichier liste de mots
+ * @param mot Mot qui sera choisi
+ * @param size_word Taille du mot 
+ * @param x_start_tab Placement en X du tableau de lettre
+ * @param alphabet Lettres qui seront dans le mot
+ * @param tabs_slots Tableau de lettres
+ * @param window Fenêtre de la partie
+ */
 void start_game(const string liste, string& mot, size_t& size_word, double& x_start_tab, array<int, 26>& alphabet, vector<vector<Texture*>>& tabs_slots, Window& window){
 
     vector<Texture*> tab_slots;
@@ -194,6 +209,11 @@ void start_game(const string liste, string& mot, size_t& size_word, double& x_st
 
 }
 
+/**
+ * Traite un string en retirant les caracctères indésirables
+ * 
+ * @param Mot
+ */
 void trim(string& s) {
     s.erase(s.begin(), find_if(s.begin(), s.end(),
         [](unsigned char ch) { return !isspace(ch); }));
@@ -206,7 +226,10 @@ void trim(string& s) {
 /**
  * Vérifie si le mot écrit éxiste dans la liste de mots
  * 
- * @return true si le mot est dans la liste
+ * @param mot Mot à vérifier
+ * @param dico Dictionnaire de vérification
+ * 
+ * @return true si le mot est dans le dictionnaire
  */
 bool verif_word_exist(const vector<char> mot, const unordered_set<string> dico){
     string mon_mot(mot.begin(), mot.end());
@@ -216,4 +239,22 @@ bool verif_word_exist(const vector<char> mot, const unordered_set<string> dico){
     } 
 
     return false;
+}
+
+
+void animJumpSlots(Window& window, const size_t tour, vector<vector<Texture*>>& tabs_slots){
+    for(int i=0; i<tabs_slots[tour].size(); i++){
+        tabs_slots[tour][i]->addY(-10);
+        window.render();
+
+        SDL_Delay(50);
+
+        if(i!=0){
+            tabs_slots[tour][i-1]->addY(10);
+            window.render();
+        }
+    }
+
+    tabs_slots[tour][tabs_slots[tour].size()-1]->addY(10);
+    window.render();
 }
