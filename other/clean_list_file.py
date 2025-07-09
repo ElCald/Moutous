@@ -21,5 +21,6 @@ def traiter_fichier(entree, sortie):
         for mot in sorted(mots_uniques):  # Trie par ordre alphabétique
             fout.write(mot + '\n')
 
+
 # Exemple d'utilisation :
-traiter_fichier('../misc/mots/petit_larousse_raw.txt', '../misc/mots/petit_larousse_FR.txt')
+traiter_fichier('../misc/mots/liste_mots_FR_raw.txt', '../misc/mots/liste_mots_FR.txt')

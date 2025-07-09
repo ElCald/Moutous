@@ -18,6 +18,7 @@ file(GLOB_RECURSE SOURCES src/*.cpp)
 
 # Linux : SDL2 installé avec les paquets
 if(${TARGET} STREQUAL "linux")
+
     # --- Find SDL2 ---
     find_package(SDL2 REQUIRED)
     include_directories(${SDL2_INCLUDE_DIRS})
