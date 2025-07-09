@@ -32,4 +32,8 @@ Génération d'un exécutable pour un environnement Linux dans le répertoire `b
 Génération d'un exécutable pour un environnement Windows dans le répertoire `build_release` avec une archive zip. 
 
 ## Annexe
-Liste de mots : [liste](http://www.3zsoftware.com/fr/listes.php)
+Liste de mots : 
+- [liste 1](http://www.3zsoftware.com/fr/listes.php)
+- [liste 2](https://www.freelang.com/dictionnaire/dic-francais.php)
+
+
