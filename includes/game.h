@@ -8,8 +8,9 @@
 #define MOTS_CLASSIQUE "misc/mots/petit_larousse_FR.txt"
 #define MOTS_SIMPLE "misc/mots/liste_mots_simple_FR.txt"
 #define MOTS_COMPLEX "misc/mots/liste_mots_FR.txt"
+#define MOTS_FREELANG "misc/mots/liste_FREELANG_FR.txt"
 
-#define LISTE_MOTS MOTS_CLASSIQUE
+#define LISTE_MOTS MOTS_FREELANG
 
 
 
@@ -43,11 +44,15 @@ string randomWord(const string nomFichier);
 
 array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string mot, const array<int, 26> alphabet);
 
-void start_game(const string liste, string& mot, size_t& size_word, double& x_start_tab, array<int, 26>& alphabet, vector<vector<Texture*>>& tabs_slots, Window& window);
+void start_game(const string liste, string& mot, size_t& size_word, double& x_start_tab, array<int, 26>& alphabet, vector<vector<Texture*>>& tabs_slots, vector<char>& lettres_correctes, Window& window);
 
 bool verif_word_exist(const vector<char> mot, const unordered_set<string> dico);
 
 void trim(string& s);
 
 void animJumpSlots(Window& window, const size_t tour, vector<vector<Texture*>>& tabs_slots);
+
+void animSlideSlots(Window& window, const size_t tour, vector<vector<Texture*>>& tabs_slots);
+
+void animSlideText(Window& window, const size_t index);
 #endif

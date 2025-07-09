@@ -20,6 +20,7 @@ int main(int argc, char* argv[]){
     bool victoire = false;
     bool failed = false;
     string mot;
+    int score = 0;
 
     array<int, 26> alphabet{}; // Tableau du nombre de lettre de l'alphabet dans le mot
 
@@ -29,6 +30,7 @@ int main(int argc, char* argv[]){
     vector<Texture*> tab_lettres_clavier; // Contient toutes les lettres du clavier
 
     vector<char> my_word; // Mot entré par l'utilisateur
+    vector<char> lettres_correctes; // Lettres bien placées par l'utilisateur
 
     vector<string> noms_fichiers_lettres {"lettre_A.bmp", "lettre_B.bmp", "lettre_C.bmp", "lettre_D.bmp", "lettre_E.bmp", "lettre_F.bmp", "lettre_G.bmp", "lettre_H.bmp",
                                         "lettre_I.bmp", "lettre_J.bmp", "lettre_K.bmp", "lettre_L.bmp", "lettre_M.bmp", "lettre_N.bmp", "lettre_O.bmp", "lettre_P.bmp",
@@ -60,8 +62,14 @@ int main(int argc, char* argv[]){
     Texture motus_logo(window, string(TEXTURE_LOGO), 448, 64, (WIN_WIDTH/2)-(448/2), 20);
     window.addTextureScene(&motus_logo);
 
-    window.addTextZones(1, 10, WIN_HEIGHT-H4-10);
+    Texture score_place(window, string(TEXTURE_SCORE_PLACE), 105, 35, WIN_WIDTH-150, H4+10);
+    window.addTextureScene(&score_place);
 
+
+    window.addTextZones(1, 10, WIN_HEIGHT-H4-10); // Mot
+
+    window.addTextZones(1, WIN_WIDTH-150+10, (H4/2)+10+17); // Score
+    window.updateText(1, "" + to_string(score));
 
     // Chargement des textures des lettres
     for(int i=0; i<26; i++){
@@ -87,9 +95,11 @@ int main(int argc, char* argv[]){
 
     unordered_set<string> dictionnaire_mots(liste_mots.begin(), liste_mots.end()); // Création d'un dictionnaire à partir de cette liste
     
-    start_game(MOTS_CLASSIQUE, mot, size_word, x_start_tab, alphabet, tabs_slots, window);
+    start_game(MOTS_CLASSIQUE, mot, size_word, x_start_tab, alphabet, tabs_slots, lettres_correctes, window);
     // printf("%s\n", mot.c_str());
     window.updateText(0, "Mot : " + mot);
+
+
 
     // initialisation du mot de l'utilisateur
     my_word.push_back(mot[0]);
@@ -210,7 +220,7 @@ int main(int argc, char* argv[]){
                     
                             window.hideTextZones();
 
-                            start_game(MOTS_CLASSIQUE, mot, size_word, x_start_tab, alphabet, tabs_slots, window);
+                            start_game(MOTS_CLASSIQUE, mot, size_word, x_start_tab, alphabet, tabs_slots, lettres_correctes, window);
                             // printf("%s\n", mot.c_str());
 
                             my_word.clear();
@@ -234,9 +244,17 @@ int main(int argc, char* argv[]){
                         case SDLK_BACKSPACE:
                             // Suppression d'une lettre tant qu'on est pas à la case 0
                             if(keyboard_cursor > 1){
+
                                 keyboard_cursor--;
                                 my_word.pop_back();
-                                tabs_slots[tour][keyboard_cursor]->texture = textures_slot.at(26)->texture;
+                                
+                                if(lettres_correctes[keyboard_cursor] != '0'){
+                                    tabs_slots[tour][keyboard_cursor]->texture = textures_slot_correctes.at(((int)mot[keyboard_cursor])-97)->texture;
+                                }
+                                else{
+                                    tabs_slots[tour][keyboard_cursor]->texture = textures_slot.at(26)->texture;
+                                }
+
                             }
                             break;
 
@@ -252,6 +270,7 @@ int main(int argc, char* argv[]){
                                     for(size_t i=0; i<mot.length(); i++){
                                         if(res.at(i) == OK){
                                             tabs_slots[tour][i]->texture = textures_slot_correctes.at(((int)my_word[i])-97)->texture;
+                                            lettres_correctes[i] = mot[i];
                                         }else if(res.at(i) == WELL){
                                             tabs_slots[tour][i]->texture = textures_slot_placements.at(((int)my_word[i])-97)->texture;
                                             victoire = false;
@@ -269,6 +288,8 @@ int main(int argc, char* argv[]){
                                         }
                                     }
 
+                                    
+
                                     if(!victoire && tour < NB_TOUR-1){
                                         my_word.clear();
 
@@ -277,12 +298,34 @@ int main(int argc, char* argv[]){
                                         my_word.push_back(mot[0]);
                                         tabs_slots[tour][0]->texture = textures_slot.at(((int)mot[0])-97)->texture;
 
+                                        // placement des lettres déjà correctes visuellement
+                                        for(int i=0; i<mot.length(); i++){
+                                            if(lettres_correctes[i] != '0'){
+                                                tabs_slots[tour][i]->texture = textures_slot_correctes.at(((int)mot[i])-97)->texture;
+                                            }
+                                        }
+
                                         animJumpSlots(window, tour-1, tabs_slots);
-                                    }else{
+                                    }
+                                    else if(victoire){
+                                        animJumpSlots(window, tour, tabs_slots);
+
+                                        score += 100/(tour+1);
+                                        window.updateText(1, "" + to_string(score));
+                                        animSlideText(window, 1);
+
+                                    }
+                                    else{
+
                                         failed = true;
-                                        window.showTextZones();
+                                        score = 0;
 
                                         animJumpSlots(window, tour, tabs_slots);
+
+                                        window.updateText(1, "" + to_string(score));
+                                        animSlideText(window, 1);
+
+                                        window.showTextZones();
                                     }
 
                                     keyboard_cursor = 1;
@@ -290,7 +333,7 @@ int main(int argc, char* argv[]){
                                     
                                 }
                                 else{
-
+                                    animSlideSlots(window, tour, tabs_slots);
                                 }
                             }
                             break;
@@ -327,6 +370,8 @@ int main(int argc, char* argv[]){
 
 
         last_update = window.animate(last_update);
+
+        window.updateText(1, "" + to_string(score));
 
         window.render();
 

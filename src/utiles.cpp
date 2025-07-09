@@ -155,8 +155,8 @@ void Window::render(){
     #endif
 
 
-    if(visibleTextZones)
-        renderTexts(); // affichage du texte
+    
+    renderTexts(); // affichage du texte
 
     SDL_RenderPresent(renderer);
 }
@@ -234,8 +234,14 @@ void Window::updateText(size_t index, const string& newText) {
 
 
 void Window::renderTexts() {
-    for (auto& t : texts)
-        t->render(renderer);
+    
+    for(int i=0; i<texts.size(); i++){
+        if(i==0 && visibleTextZones)
+            texts[i]->render(renderer);
+        else if(i!=0)
+            texts[i]->render(renderer);
+    }
+        
 }
 
 
@@ -321,6 +327,15 @@ void TextElement::render(SDL_Renderer* renderer) {
         SDL_RenderCopy(renderer, texture, nullptr, &rect);
 }
 
+
+void TextElement::addX(int _x){
+    rect.x += _x;
+    
+}
+
+void TextElement::addY(int _y){
+    rect.y += _y;
+}
 
 
 

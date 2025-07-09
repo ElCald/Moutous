@@ -21,6 +21,7 @@
 #define TEXTURE_BACKGROUND_LOAD REP_BACKGROUND "bg_bleu_chargement.bmp"
 #define TEXTURE_SLOT REP_UI "slot.bmp"
 #define TEXTURE_LOGO REP_UI "motus_logo.bmp"
+#define TEXTURE_SCORE_PLACE REP_UI "score_place.bmp"
 
 
 // Polices d'écriture
@@ -72,6 +73,8 @@ class Window {
 
         vector<Objet*> objets_scene; // Emplacement des objets de la scène
 
+        vector<TextElement*> texts;
+
 
     private:
         int win_width;
@@ -88,7 +91,7 @@ class Window {
         vector<Texture*> texture_scene; // Images de la scène
         vector<Texture*> texture_slots; // Images de la scène
         vector<Texture*> texture_banned; // Images de la scène
-        vector<TextElement*> texts;
+        
 
         void addText(const string& text, int x, int y, SDL_Color color);   
         void renderTexts();
@@ -108,7 +111,6 @@ class Window {
 
         void clearTextureSlots();
           
-
         int get_center_win_width();
         int get_center_win_height();
  
@@ -122,7 +124,6 @@ class Window {
         void enableAnimations();
         void disableAnimations();
         
-
 };
 
 
@@ -134,12 +135,18 @@ class TextElement {
         void setText(const string& newText);
         void render(SDL_Renderer* renderer);
 
+        void addX(int _x);
+        void addY(int _y);
+
+        bool visible;
+
     private:
         SDL_Texture* texture;
         SDL_Rect rect;
         TTF_Font* font;
         string currentText;
         SDL_Color color;
+        
         
 
         void updateTexture(SDL_Renderer* renderer);

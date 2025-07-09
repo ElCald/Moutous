@@ -166,13 +166,16 @@ array<PLACEMENT, CAPACITY> compareWords(const vector<char> input, const string m
  * @param x_start_tab Placement en X du tableau de lettre
  * @param alphabet Lettres qui seront dans le mot
  * @param tabs_slots Tableau de lettres
+ * @param lettres_correctes
  * @param window Fenêtre de la partie
  */
-void start_game(const string liste, string& mot, size_t& size_word, double& x_start_tab, array<int, 26>& alphabet, vector<vector<Texture*>>& tabs_slots, Window& window){
+void start_game(const string liste, string& mot, size_t& size_word, double& x_start_tab, array<int, 26>& alphabet, vector<vector<Texture*>>& tabs_slots, vector<char>& lettres_correctes, Window& window){
 
     vector<Texture*> tab_slots;
 
     tabs_slots.clear();
+    lettres_correctes.clear();
+
     window.clearTextureSlots();
 
     mot = randomWord(liste);
@@ -188,6 +191,7 @@ void start_game(const string liste, string& mot, size_t& size_word, double& x_st
     // On remplit le tableau pour savoir quelles lettres font partit du mot
     for(size_t i=0; i<size_word; i++){
         alphabet[((int)mot[i])-97] += 1;
+        lettres_correctes.push_back('0');
     }
 
     for(size_t j=0; j<NB_TOUR; j++){
@@ -257,4 +261,45 @@ void animJumpSlots(Window& window, const size_t tour, vector<vector<Texture*>>& 
 
     tabs_slots[tour][tabs_slots[tour].size()-1]->addY(10);
     window.render();
+}
+
+
+void animSlideSlots(Window& window, const size_t tour, vector<vector<Texture*>>& tabs_slots){
+
+    for(int j=0; j<4; j++){
+        for(int i=0; i<tabs_slots[tour].size(); i++){
+            tabs_slots[tour][i]->addX(-3);
+        }
+        window.render();
+        SDL_Delay(10);
+    }
+
+    for(int j=0; j<4; j++){
+        for(int i=0; i<tabs_slots[tour].size(); i++){
+            tabs_slots[tour][i]->addX(6);
+        }
+        window.render();
+        SDL_Delay(5);
+    }
+
+    for(int j=0; j<4; j++){
+        for(int i=0; i<tabs_slots[tour].size(); i++){
+            tabs_slots[tour][i]->addX(-3);
+        }
+        window.render();
+        SDL_Delay(10);
+    }
+}
+
+
+void animSlideText(Window& window, const size_t index){
+
+    window.texts[index]->addY(50);
+    window.render();
+
+    for(int j=0; j<10; j++){
+        window.texts[index]->addY(-5);
+        window.render();
+        SDL_Delay(15);
+    }
 }
