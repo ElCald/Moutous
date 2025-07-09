@@ -10,7 +10,9 @@ L'objectif est de trouver le mot mystère avec 6 propositions.
 - Lettres classiques -> incorrectes
 
 Appuis sur la touche `Enter` pour valider. <br>
+Appuis sur la touche `Space` pour changer de mot. <br>
 Appuis sur la touche `Tab` pour afficher le mot.
+
 
 ------------------------
 <img src="/other/exemple/moutous_demo.gif" alt="Exemple en gif du jeu Moutous" width="" height=""/>
@@ -27,7 +29,7 @@ Génération d'un exécutable pour un environnement Linux dans le répertoire `b
 ```
 ./rebuild.sh windows
 ```
-Génération d'un exécutable pour un environnement Windows dans le répertoire `build_release`. Pour compacter l'application, faire un zip du `moutous.exe`, `bin/` et `misc/`.
+Génération d'un exécutable pour un environnement Windows dans le répertoire `build_release` avec une archive zip. 
 
 ## Annexe
 Liste de mots : [liste](http://www.3zsoftware.com/fr/listes.php)
