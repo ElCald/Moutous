@@ -34,6 +34,6 @@ Génération d'un exécutable pour un environnement Windows dans le répertoire 
 ## Annexe
 Liste de mots : 
 - [liste 1](http://www.3zsoftware.com/fr/listes.php)
-- [liste 2](https://www.freelang.com/dictionnaire/dic-francais.php)
+- [liste 2](http://www.lexique.org)
 
 
