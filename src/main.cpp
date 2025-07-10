@@ -65,6 +65,9 @@ int main(int argc, char* argv[]){
     Texture score_place(window, string(TEXTURE_SCORE_PLACE), 105, 35, WIN_WIDTH-150, H4+10);
     window.addTextureScene(&score_place);
 
+    Texture credit_jeu(window, string(TEXTURE_CREDIT), 149, 28, WIN_WIDTH-159, WIN_HEIGHT-38);
+    window.addTextureScene(&credit_jeu);
+
 
     window.addTextZones(1, 10, WIN_HEIGHT-H4-10); // Mot
 
@@ -95,7 +98,7 @@ int main(int argc, char* argv[]){
 
     unordered_set<string> dictionnaire_mots(liste_mots.begin(), liste_mots.end()); // Création d'un dictionnaire à partir de cette liste
     
-    start_game(MOTS_CLASSIQUE, mot, size_word, x_start_tab, alphabet, tabs_slots, lettres_correctes, window);
+    start_game(MOTS_MOUTOUS, mot, size_word, x_start_tab, alphabet, tabs_slots, lettres_correctes, window);
     // printf("%s\n", mot.c_str());
     window.updateText(0, "Mot : " + mot);
 
@@ -103,7 +106,7 @@ int main(int argc, char* argv[]){
 
     // initialisation du mot de l'utilisateur
     my_word.push_back(mot[0]);
-    tabs_slots[tour][0]->texture = textures_slot.at(((int)mot[0])-97)->texture;
+    tabs_slots[tour][0]->texture = textures_slot_correctes.at(((int)mot[0])-97)->texture;
 
 
     SDL_Keycode key;
@@ -206,9 +209,12 @@ int main(int argc, char* argv[]){
                         }
                         
                         // On attribut à la case du tableau la texture de la lettre correspondante
-                        tabs_slots[tour][keyboard_cursor]->texture = textures_slot.at(((int)lettre)-97)->texture;
-                        my_word.push_back(lettre);
-                        keyboard_cursor++;
+                        if(!(lettre == mot[0] && keyboard_cursor == 1)){ // on évite de taper la première lettre du mot à la position 1
+                            tabs_slots[tour][keyboard_cursor]->texture = textures_slot.at(((int)lettre)-97)->texture;
+                            my_word.push_back(lettre);
+                            keyboard_cursor++;
+                        }
+                        
                     }
 
                     switch (window.event.key.keysym.sym) {
@@ -220,7 +226,7 @@ int main(int argc, char* argv[]){
                     
                             window.hideTextZones();
 
-                            start_game(MOTS_CLASSIQUE, mot, size_word, x_start_tab, alphabet, tabs_slots, lettres_correctes, window);
+                            start_game(MOTS_MOUTOUS, mot, size_word, x_start_tab, alphabet, tabs_slots, lettres_correctes, window);
                             // printf("%s\n", mot.c_str());
 
                             my_word.clear();

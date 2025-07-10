@@ -5,12 +5,11 @@
 #include "utiles.h"
 
 
-#define MOTS_CLASSIQUE "misc/mots/petit_larousse_FR.txt"
-#define MOTS_SIMPLE "misc/mots/liste_mots_simple_FR.txt"
+#define MOTS_MOUTOUS "misc/mots/liste_moutous_FR.txt"
 #define MOTS_COMPLEX "misc/mots/liste_mots_FR.txt"
-#define MOTS_FREELANG "misc/mots/liste_FREELANG_FR.txt"
 
-#define LISTE_MOTS MOTS_FREELANG
+
+#define LISTE_MOTS MOTS_MOUTOUS
 
 
 

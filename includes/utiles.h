@@ -22,6 +22,7 @@
 #define TEXTURE_SLOT REP_UI "slot.bmp"
 #define TEXTURE_LOGO REP_UI "motus_logo.bmp"
 #define TEXTURE_SCORE_PLACE REP_UI "score_place.bmp"
+#define TEXTURE_CREDIT REP_UI "credit.bmp"
 
 
 // Polices d'écriture
