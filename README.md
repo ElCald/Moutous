@@ -1,8 +1,8 @@
 # Moutous
 
-Jeu adapté de l'emission "Motus" et repris des jeux "Tusmo" et "Wordle". <br>
+Jeu adapté de l'émission "Motus" et repris des jeux "Tusmo" et "Wordle". <br>
 
-L'objectif est de trouver le mot mystère avec 6 propositions.
+L'objectif est de trouver le mot mystère avec 6 propositions. Le jeu se compose d'une liste d'environ 12 000 mots provenant de [Lexique383](http://www.lexique.org), une base de données bien plus importante permet d'essayer une multitude de mots de la langue française lors des propositions.
 
 ### Guide 
 - Lettres en vert -> correctes et bien placées
@@ -32,6 +32,8 @@ Génération d'un exécutable pour un environnement Linux dans le répertoire `b
 Génération d'un exécutable pour un environnement Windows dans le répertoire `build_release` avec une archive zip. 
 
 ## Annexe
+Un script python `clean_list_file.py` permet de retirer les accents, éviter la casse et retirer les mots avec des tirets ou des espaces. <br><br>
+
 Liste de mots : 
 - [liste 1](http://www.3zsoftware.com/fr/listes.php)
 - [liste 2](http://www.lexique.org)
